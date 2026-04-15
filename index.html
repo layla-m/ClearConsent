@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vitalis – Your Health, Understood</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ══════════════════════════════════════
+     VITALIS — Health Brand Variables
+  ══════════════════════════════════════ */
+  :root {
+    /* Vitalis (host app) — blue health palette */
+    --bg:            #eef6fb;
+    --surface:       #ffffff;
+    --surface2:      #f0f7ff;
+    --border:        #c7dff0;
+    --text:          #0d1f2d;
+    --text-muted:    #5a7a91;
+    --primary:       #0a6ebf;
+    --primary-light: #daeeff;
+    --primary-hover: #084f8c;
+    --primary-faint: #f0f7ff;
+    --success:       #0e9e6e;
+    --success-light: #d4f5e7;
+    --warn:          #d4580a;
+    --warn-light:    #fde8d8;
+    --radius:        14px;
+    --shadow:        0 2px 16px rgba(10, 110, 191, 0.09);
+    --shadow-lg:     0 8px 40px rgba(10, 110, 191, 0.14);
+
+    /* ClearConsent module — kept green to visually distinguish */
+    --cc-accent:       #2d6a4f;
+    --cc-light:        #d8f3dc;
+    --cc-hover:        #1b4332;
+    --cc-border:       #b7e4c7;
+    --cc-warn:         #e76f51;
+    --cc-warn-light:   #fde8e1;
+    --cc-neutral:      #457b9d;
+    --cc-neutral-light:#dbeafe;
+    --cc-yellow-light: #fff3e0;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 16px 60px;
+  }
+
+  /* ── Top bar ── */
+  .topbar {
+    width: 100%; max-width: 760px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 26px 0 18px;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--primary), #1a8fe8);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; box-shadow: 0 2px 8px rgba(10,110,191,0.3);
+  }
+  .logo-wordmark { display: flex; flex-direction: column; line-height: 1; }
+  .logo-name { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; color: var(--text); }
+  .logo-name span { color: var(--primary); }
+  .logo-tag  { font-size: 10px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.3px; margin-top: 2px; }
+  .step-badge {
+    font-size: 11px; font-weight: 600; color: var(--primary);
+    background: var(--primary-light); border: 1px solid #a8d4f0;
+    padding: 5px 13px; border-radius: 99px; font-family: 'DM Mono', monospace;
+  }
+
+  /* ── Progress bar ── */
+  .progress-wrap {
+    width: 100%; max-width: 760px;
+    background: #c7dff0; border-radius: 4px; height: 4px; margin-bottom: 24px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), #1a8fe8);
+    border-radius: 4px; transition: width 0.5s ease;
+  }
+
+  /* ── Base card ── */
+  .card {
+    width: 100%; max-width: 760px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    animation: fadeUp 0.4s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Vitalis Hero band ── */
+  .hero {
+    padding: 36px 40px 28px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(160deg, #f5faff 0%, #ffffff 60%);
+  }
+  .hero-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 1.4px;
+    text-transform: uppercase; color: var(--primary);
+    margin-bottom: 10px; font-family: 'DM Mono', monospace;
+  }
+  .hero h1 {
+    font-size: 27px; font-weight: 700; line-height: 1.25;
+    letter-spacing: -0.6px; margin-bottom: 10px; color: var(--text);
+  }
+  .hero h1 em { font-style: normal; color: var(--primary); }
+  .hero p { font-size: 14px; color: var(--text-muted); line-height: 1.65; max-width: 520px; }
+
+  /* ── Feature preview row (step 1) ── */
+  .feature-strip {
+    display: flex; gap: 0;
+    border-top: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .feat-cell {
+    flex: 1; padding: 16px 14px;
+    display: flex; align-items: center; gap: 10px;
+    border-right: 1px solid var(--border);
+    background: var(--primary-faint);
+  }
+  .feat-cell:last-child { border-right: none; }
+  .feat-cell .fc-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: var(--primary-light); border: 1px solid #a8d4f0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; flex-shrink: 0;
+  }
+  .feat-cell .fc-text .fc-label { font-size: 12px; font-weight: 600; color: var(--text); }
+  .feat-cell .fc-text .fc-sub   { font-size: 11px; color: var(--text-muted); }
+
+  /* ── Trust badges ── */
+  .trust-row {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    padding: 14px 40px; border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .trust-label { font-size: 11px; font-weight: 600; color: var(--text-muted); font-family: 'DM Mono', monospace; }
+  .trust-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 600;
+    padding: 4px 10px; border-radius: 99px;
+    background: var(--primary-light); color: var(--primary); border: 1px solid #a8d4f0;
+    position: relative; cursor: help;
+  }
+  .trust-badge .badge-info {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--primary); color: white;
+    font-size: 9px; font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-style: normal;
+  }
+  /* Tooltip bubble */
+  .trust-badge::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%; transform: translateX(-50%);
+    background: #0d1f2d; color: #e8f4ff;
+    font-size: 11px; font-weight: 400; line-height: 1.55;
+    padding: 9px 13px; border-radius: 9px;
+    width: 210px; text-align: center; white-space: normal;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.18s ease;
+    font-family: 'Inter', sans-serif;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+    z-index: 200;
+  }
+  /* Tooltip arrow */
+  .trust-badge::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 4px); left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #0d1f2d;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.18s ease;
+    z-index: 200;
+  }
+  .trust-badge:hover::after,
+  .trust-badge:hover::before { opacity: 1; }
+
+  /* ── Form body ── */
+  .form-body { padding: 32px 40px; }
+  .field-group { margin-bottom: 20px; }
+  .field-label {
+    display: block; font-size: 11px; font-weight: 600;
+    color: var(--text-muted); letter-spacing: 0.8px;
+    text-transform: uppercase; margin-bottom: 7px; font-family: 'DM Mono', monospace;
+  }
+  .field-input {
+    width: 100%; padding: 13px 14px;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    font-family: 'Inter', sans-serif; font-size: 14px; color: var(--text);
+    background: var(--surface); outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .field-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+  }
+  .field-input::placeholder { color: #a0bacf; }
+  .input-hint { font-size: 11px; color: var(--text-muted); margin-top: 5px; }
+  .input-wrap { position: relative; }
+  .input-wrap .field-input { padding-right: 64px; }
+  .input-toggle {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; font-family: 'DM Mono', monospace;
+    font-size: 11px; font-weight: 600; color: var(--primary); cursor: pointer;
+  }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* ── Checkbox ── */
+  .checkbox-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 13px; color: var(--text-muted); margin-top: 4px;
+  }
+  .checkbox-row input[type="checkbox"] {
+    width: 16px; height: 16px; accent-color: var(--primary);
+    cursor: pointer; margin-top: 2px; flex-shrink: 0;
+  }
+  .checkbox-row a { color: var(--primary); text-decoration: none; cursor: pointer; }
+  .checkbox-row a:hover { text-decoration: underline; }
+
+  /* ── Modal overlay ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(10, 31, 45, 0.5); backdrop-filter: blur(2px);
+    z-index: 1000; align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    background: var(--surface); border-radius: 18px;
+    box-shadow: 0 20px 60px rgba(10,31,45,0.25);
+    width: 100%; max-width: 560px; max-height: 80vh;
+    display: flex; flex-direction: column;
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .modal-header h3 { font-size: 16px; font-weight: 700; color: var(--text); }
+  .modal-close {
+    width: 30px; height: 30px; border-radius: 50%; border: none;
+    background: var(--surface2); cursor: pointer; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted); transition: background 0.15s;
+  }
+  .modal-close:hover { background: var(--border); }
+  .modal-body {
+    padding: 20px 24px; overflow-y: auto; font-size: 13px;
+    color: var(--text-muted); line-height: 1.7;
+  }
+  .modal-body h4 { font-size: 12px; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 0.8px; margin: 18px 0 6px; font-family: 'DM Mono', monospace; }
+  .modal-body h4:first-child { margin-top: 0; }
+  .modal-body p { margin-bottom: 10px; }
+  .modal-footer {
+    padding: 16px 24px; border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  /* ── Goal option cards ── */
+  .option-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .option-card {
+    border: 1.5px solid var(--border); border-radius: var(--radius);
+    padding: 16px 10px; cursor: pointer; transition: all 0.2s;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    text-align: center; user-select: none; background: var(--surface);
+  }
+  .option-card:hover { border-color: var(--primary); background: var(--primary-faint); }
+  .option-card.selected { border-color: var(--primary); background: var(--primary-light); }
+  .opt-icon  { font-size: 26px; }
+  .opt-label { font-size: 12px; font-weight: 600; color: var(--text); }
+  .opt-sub   { font-size: 10px; color: var(--text-muted); line-height: 1.3; }
+
+  /* ── CTA area ── */
+  .cta-area {
+    padding: 22px 40px; border-top: 1px solid var(--border);
+    display: flex; gap: 10px; background: var(--surface);
+  }
+  .btn-primary {
+    flex: 1; padding: 14px 24px;
+    background: linear-gradient(135deg, var(--primary), #1a8fe8);
+    color: white; border: none; border-radius: 10px;
+    font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s; letter-spacing: -0.1px;
+    box-shadow: 0 2px 8px rgba(10,110,191,0.25);
+  }
+  .btn-primary:hover { background: linear-gradient(135deg, var(--primary-hover), var(--primary)); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(10,110,191,0.35); }
+  .btn-secondary {
+    padding: 14px 20px; background: none;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    font-family: 'Inter', sans-serif; font-size: 14px; color: var(--text-muted);
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+  .btn-secondary.hidden { visibility: hidden; pointer-events: none; }
+
+  /* ── Error message ── */
+  .error-msg {
+    font-size: 12px; color: var(--warn); font-weight: 600;
+    margin-top: 10px; display: none;
+    padding: 10px 14px; background: var(--warn-light);
+    border-radius: 8px; border-left: 3px solid var(--warn);
+  }
+  /* Field-level error highlight */
+  .field-input.field-error {
+    border-color: var(--warn);
+    box-shadow: 0 0 0 3px var(--warn-light);
+  }
+  .option-grid.field-error .option-card:not(.selected) {
+    border-color: #f4b8a6;
+  }
+  .option-grid.field-error {
+    border-radius: var(--radius);
+    box-shadow: 0 0 0 3px var(--warn-light);
+  }
+
+  /* ════════════════════════════════════
+     CLEARCONSENT MODULE — distinct green
+  ════════════════════════════════════ */
+
+  /* Module header banner */
+  .cc-module-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 40px; background: #f0faf4;
+    border-bottom: 1px solid #b7e4c7;
+  }
+  .cc-module-id {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .cc-module-icon {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: var(--cc-accent); display: flex; align-items: center;
+    justify-content: center; font-size: 14px;
+  }
+  .cc-module-name { font-size: 13px; font-weight: 700; color: var(--cc-accent); }
+  .cc-module-sub  { font-size: 11px; color: #4d8c6a; margin-top: 1px; font-family: 'DM Mono', monospace; }
+  .cc-powered {
+    font-size: 11px; color: #4d8c6a; font-family: 'DM Mono', monospace;
+    background: var(--cc-light); border: 1px solid var(--cc-border);
+    padding: 4px 10px; border-radius: 99px;
+  }
+
+  /* CC hero override */
+  .cc-hero {
+    padding: 30px 40px 24px;
+    border-bottom: 1px solid #d0e8d8;
+    background: linear-gradient(160deg, #f4fbf6 0%, #ffffff 60%);
+  }
+  .cc-hero-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 1.2px;
+    text-transform: uppercase; color: var(--cc-accent);
+    margin-bottom: 10px; font-family: 'DM Mono', monospace;
+  }
+  .cc-hero h2 { font-size: 24px; font-weight: 700; line-height: 1.25; letter-spacing: -0.5px; margin-bottom: 8px; }
+  .cc-hero p  { font-size: 14px; color: var(--text-muted); line-height: 1.6; max-width: 520px; }
+
+  /* CC chips */
+  .cc-chips {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    padding: 18px 40px; border-bottom: 1px solid #d0e8d8;
+    background: #f9fdfb;
+  }
+  .chip {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 500;
+    padding: 5px 12px; border-radius: 99px; border: 1px solid transparent;
+  }
+  .chip.good   { background: var(--cc-light);        color: var(--cc-hover);   border-color: var(--cc-border); }
+  .chip.good2  { background: #d0f4ee;                color: #0a6b5a;           border-color: #8ed5c4; }
+  .chip.warn   { background: var(--cc-warn-light);   color: #b5341a;           border-color: #f9c4b7; }
+  .chip.info   { background: var(--cc-neutral-light); color: #1e4d6b;          border-color: #bfdbfe; }
+  .chip.note   { background: var(--cc-yellow-light);  color: #8a4800;          border-color: #fdd99b; }
+
+  /* CC tabs */
+  .cc-tabs {
+    display: flex; gap: 2px;
+    padding: 14px 40px 0; border-bottom: 1px solid #d0e8d8;
+    background: #fafdfb;
+  }
+  .tab-btn {
+    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
+    padding: 9px 15px; border-radius: 8px 8px 0 0;
+    border: 1px solid transparent; border-bottom: none;
+    background: none; cursor: pointer; color: var(--text-muted);
+    transition: all 0.2s; position: relative; top: 1px;
+  }
+  .tab-btn:hover { color: var(--cc-accent); background: #f0faf4; }
+  .tab-btn.active {
+    background: var(--surface); color: var(--cc-accent);
+    border-color: #d0e8d8; font-weight: 600;
+  }
+
+  /* Tab panels */
+  .tab-panel { display: none; padding: 28px 40px; }
+  .tab-panel.active { display: block; animation: fadeUp 0.3s ease; }
+
+  /* Section title */
+  .section-title {
+    font-size: 11px; font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--text-muted);
+    font-family: 'DM Mono', monospace; margin-bottom: 14px;
+  }
+
+  /* Data cards grid */
+  .data-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px,1fr)); gap: 12px; margin-bottom: 20px; }
+  .data-card {
+    border: 1px solid #d8eddf; border-radius: var(--radius);
+    padding: 16px; cursor: pointer; transition: all 0.2s; background: var(--surface);
+  }
+  .data-card:hover { border-color: var(--cc-accent); box-shadow: 0 0 0 3px var(--cc-light); }
+  .data-card.expanded { border-color: var(--cc-accent); background: #f7fdf9; }
+  .data-card-icon  { font-size: 24px; margin-bottom: 8px; }
+  .data-card-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .data-card-sub   { font-size: 12px; color: var(--text-muted); }
+  .data-card-detail {
+    display: none; margin-top: 12px; padding-top: 12px;
+    border-top: 1px solid #d8eddf;
+    font-size: 12px; color: var(--text-muted); line-height: 1.6;
+  }
+  .data-card.expanded .data-card-detail { display: block; }
+  .expand-hint {
+    font-size: 11px; color: var(--cc-accent); font-weight: 600;
+    margin-top: 8px; font-family: 'DM Mono', monospace;
+  }
+
+  /* Flow diagram */
+  .flow { display: flex; align-items: center; flex-wrap: wrap; margin: 8px 0 20px; }
+  .flow-node { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+  .flow-icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; border: 2px solid #d8eddf; background: var(--surface);
+  }
+  .flow-label { font-size: 11px; font-weight: 600; color: var(--text-muted); max-width: 64px; line-height: 1.3; }
+  .flow-arrow { font-size: 18px; color: #c8dfd0; padding: 0 6px; margin-bottom: 18px; }
+  .flow-third .flow-icon  { border-color: var(--cc-warn); background: var(--cc-warn-light); }
+  .flow-third .flow-label { color: var(--cc-warn); }
+
+  /* Retention bars */
+  .retention-list { display: flex; flex-direction: column; gap: 12px; }
+  .ret-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+  .ret-name { font-size: 13px; font-weight: 500; }
+  .ret-val  { font-size: 12px; font-family: 'DM Mono', monospace; color: var(--text-muted); }
+  .ret-bar-bg { height: 8px; background: #e8f5ec; border-radius: 4px; overflow: hidden; }
+  .ret-bar-fill { height: 100%; border-radius: 4px; transition: width 1s cubic-bezier(.22,.61,.36,1); }
+
+  /* Rights accordion */
+  .rights-list { display: flex; flex-direction: column; gap: 8px; }
+  .right-item  { border: 1px solid #d8eddf; border-radius: var(--radius); overflow: hidden; }
+  .right-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px; cursor: pointer; font-size: 14px; font-weight: 500;
+    background: none; border: none; width: 100%; text-align: left;
+    font-family: 'Inter', sans-serif; color: var(--text); transition: background 0.15s;
+  }
+  .right-head:hover { background: #f4fbf6; }
+  .right-head .chevron { font-size: 12px; color: var(--text-muted); transition: transform 0.2s; }
+  .right-head.open .chevron { transform: rotate(180deg); }
+  .right-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+  .right-body.open { max-height: 300px; }
+  .right-body-inner { padding: 0 16px 14px; }
+
+  /* Scenarios */
+  .scenarios { display: flex; flex-direction: column; gap: 10px; }
+  .scenario  { border-radius: var(--radius); padding: 16px; border-left: 4px solid; font-size: 13px; line-height: 1.6; }
+  .scenario.good { background: var(--cc-light);         border-color: var(--cc-accent);   }
+  .scenario.warn { background: var(--cc-warn-light);    border-color: var(--cc-warn);     }
+  .scenario.info { background: var(--cc-neutral-light); border-color: var(--cc-neutral);  }
+  .scenario strong { font-weight: 600; display: block; margin-bottom: 4px; }
+
+  /* Toggles */
+  .toggles { display: flex; flex-direction: column; gap: 14px; }
+  .toggle-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .toggle-info { flex: 1; }
+  .toggle-info .t-name { font-size: 14px; font-weight: 500; margin-bottom: 3px; }
+  .toggle-info .t-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+  .toggle-info .t-required { font-size: 11px; font-weight: 600; color: var(--cc-warn); font-family: 'DM Mono', monospace; margin-top: 4px; }
+  .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; margin-top: 2px; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider { position: absolute; inset: 0; border-radius: 12px; background: #c5d9e8; cursor: pointer; transition: .2s; }
+  .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; top: 3px; border-radius: 50%; background: white; transition: .2s; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+  input:checked + .slider { background: var(--cc-accent); }
+  input:checked + .slider:before { transform: translateX(20px); }
+  input:disabled + .slider { opacity: 0.55; cursor: not-allowed; }
+
+  /* Consent summary */
+  .summary-box { border: 1px solid #d8eddf; border-radius: var(--radius); padding: 20px; margin-bottom: 20px; background: #f4fbf6; }
+  .summary-rows { display: flex; flex-direction: column; gap: 10px; }
+  .sum-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+  .sum-row .sum-label { color: var(--text-muted); }
+  .sum-row .sum-val   { font-weight: 600; }
+  .sum-row .sum-val.yes { color: var(--cc-accent); }
+  .sum-row .sum-val.no  { color: var(--cc-warn); }
+
+  /* CC CTA */
+  .cc-cta {
+    padding: 22px 40px; border-top: 1px solid #d0e8d8;
+    display: flex; gap: 10px; background: #fafdfb;
+  }
+  .cc-btn-primary {
+    flex: 1; padding: 14px 24px;
+    background: var(--cc-accent); color: white;
+    border: none; border-radius: 10px;
+    font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .cc-btn-primary:hover { background: var(--cc-hover); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(45,106,79,0.3); }
+  .cc-btn-secondary {
+    padding: 14px 20px; background: none;
+    border: 1px solid #c0dfcc; border-radius: 10px;
+    font-family: 'Inter', sans-serif; font-size: 14px; color: var(--text-muted);
+    cursor: pointer; transition: all 0.2s;
+  }
+  .cc-btn-secondary:hover { border-color: var(--cc-accent); color: var(--cc-accent); }
+  .cc-btn-secondary.hidden { visibility: hidden; pointer-events: none; }
+
+  /* ── Welcome screen ── */
+  .welcome-body {
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center; padding: 50px 40px 36px;
+  }
+  .welcome-icon {
+    width: 84px; height: 84px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-light), #c0e8ff);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px; margin-bottom: 22px;
+    border: 2px solid #a8d4f0; box-shadow: 0 4px 16px rgba(10,110,191,0.18);
+  }
+  .welcome-body h2 { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; margin-bottom: 10px; color: var(--text); }
+  .welcome-body > p { font-size: 14px; color: var(--text-muted); line-height: 1.65; max-width: 420px; }
+  .welcome-features {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 14px; width: 100%; margin: 28px 0 10px;
+  }
+  .welcome-feat {
+    background: var(--primary-faint); border: 1px solid #c7dff0;
+    border-radius: var(--radius); padding: 20px 14px; text-align: center;
+  }
+  .feat-icon  { font-size: 26px; margin-bottom: 8px; }
+  .feat-label { font-size: 13px; font-weight: 600; color: var(--text); }
+  .feat-sub   { font-size: 11px; color: var(--text-muted); margin-top: 4px; line-height: 1.4; }
+
+  /* Consent attribution */
+  .consent-attr {
+    display: flex; align-items: center; gap: 8px; margin-top: 18px;
+    font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace;
+    padding: 10px 16px; background: #f4fbf6; border: 1px solid var(--cc-border);
+    border-radius: 99px;
+  }
+  .consent-attr .cc-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--cc-accent);
+  }
+
+  /* ── Misc ── */
+  .divider { border: none; border-top: 1px solid #d8eddf; margin: 20px 0; }
+  .small-note { font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-top: 12px; }
+
+  @media (max-width: 580px) {
+    .hero, .form-body, .cta-area, .cc-hero, .cc-chips, .cc-tabs, .tab-panel, .cc-cta,
+    .cc-module-header, .trust-row { padding-left: 20px; padding-right: 20px; }
+    .cc-tabs { overflow-x: auto; }
+    .data-grid, .option-grid { grid-template-columns: 1fr 1fr; }
+    .welcome-features { grid-template-columns: 1fr 1fr; }
+    .feature-strip { flex-direction: column; }
+    .feat-cell { border-right: none; border-bottom: 1px solid var(--border); }
+    .field-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─────────────────────────────────────
+     TOPBAR (shared across all steps)
+───────────────────────────────────── -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon">🫀</div>
+    <div class="logo-wordmark">
+      <div class="logo-name">Vi<span>talis</span></div>
+      <div class="logo-tag">Your health, understood</div>
+    </div>
+  </div>
+  <div class="step-badge" id="step-badge">Step 1 of 4 · Account</div>
+</div>
+<div class="progress-wrap">
+  <div class="progress-fill" id="progress-fill" style="width: 25%"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     STEP 1 — Create Account
+═══════════════════════════════════════════ -->
+<div class="card" id="step-1">
+  <div class="hero">
+    <div class="hero-label">Welcome to Vitalis</div>
+    <h1>Your personal<br><em>health command centre</em></h1>
+    <p>Track vitals, discover clinics, and manage your health data in one place, built with your privacy at the centre.</p>
+  </div>
+
+  <div class="feature-strip">
+    <div class="feat-cell">
+      <div class="fc-icon">📊</div>
+      <div class="fc-text">
+        <div class="fc-label">Health Dashboard</div>
+        <div class="fc-sub">Vitals & trends at a glance</div>
+      </div>
+    </div>
+    <div class="feat-cell">
+      <div class="fc-icon">🩺</div>
+      <div class="fc-text">
+        <div class="fc-label">Clinic Finder</div>
+        <div class="fc-sub">Nearby care, instantly</div>
+      </div>
+    </div>
+    <div class="feat-cell">
+      <div class="fc-icon">🔔</div>
+      <div class="fc-text">
+        <div class="fc-label">Smart Alerts</div>
+        <div class="fc-sub">Medication & appointment reminders</div>
+      </div>
+    </div>
+    <div class="feat-cell">
+      <div class="fc-icon">🔒</div>
+      <div class="fc-text">
+        <div class="fc-label">Privacy First</div>
+        <div class="fc-sub">You control your health data</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="trust-row">
+    <span class="trust-label">Certified &amp; compliant:</span>
+    <span class="trust-badge" data-tip="Canada's federal privacy law. It governs how private-sector organizations collect, use, and disclose your personal information.">✓ PIPEDA</span>
+    <span class="trust-badge" data-tip="Follows U.S. health data security standards for protecting sensitive patient health information from unauthorized access.">✓ HIPAA Ready</span>
+    <span class="trust-badge" data-tip="An independent audit that has verified our security and privacy controls are effective and consistently applied over time.">✓ SOC 2 Type II</span>
+    <span class="trust-badge" data-tip="Your data is protected using 256-bit AES encryption, the same standard used by banks and governments worldwide.">✓ 256-bit Encryption</span>
+  </div>
+
+  <div class="form-body">
+    <div class="field-group">
+      <label class="field-label" for="s1-email">Email address</label>
+      <input class="field-input" type="email" id="s1-email" placeholder="you@example.com" autocomplete="email">
+    </div>
+    <div class="field-group">
+      <label class="field-label" for="s1-password">Password</label>
+      <div class="input-wrap">
+        <input class="field-input" type="password" id="s1-password" placeholder="Min. 8 characters" autocomplete="new-password">
+        <button class="input-toggle" type="button" onclick="togglePassword('s1-password', this)">Show</button>
+      </div>
+      <p class="input-hint" id="pw-hint">At least 8 characters, including a number or symbol.</p>
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="s1-terms">
+      <label for="s1-terms">I agree to Vitalis's <a onclick="openModal('modal-tos')">Terms of Service</a> and acknowledge that my privacy preferences will be collected via <a onclick="openModal('modal-cc')">ClearConsent™</a>.</label>
+    </div>
+    <div class="error-msg" id="s1-error">Please fill in all fields and accept the terms to continue.</div>
+  </div>
+  <div class="cta-area">
+    <button class="btn-primary" onclick="submitStep1()">Create Account →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     STEP 2 — Your Profile
+═══════════════════════════════════════════ -->
+<div class="card" id="step-2" style="display:none;">
+  <div class="hero">
+    <div class="hero-label">Step 2 of 4 · Profile</div>
+    <h1>Let's personalise<br><em>your health profile</em></h1>
+    <p>Help Vitalis give you the most relevant insights, reminders, and clinic matches based on your needs.</p>
+  </div>
+  <div class="form-body">
+    <div class="field-row">
+      <div class="field-group">
+        <label class="field-label" for="s2-fname">First name</label>
+        <input class="field-input" type="text" id="s2-fname" placeholder="First" autocomplete="given-name">
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="s2-lname">Last name</label>
+        <input class="field-input" type="text" id="s2-lname" placeholder="Last" autocomplete="family-name">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field-group">
+        <label class="field-label" for="s2-dob">Date of birth</label>
+        <input class="field-input" type="date" id="s2-dob">
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="s2-phone">Phone (optional)</label>
+        <input class="field-input" type="tel" id="s2-phone" placeholder="+1 (555) 000-0000" autocomplete="tel">
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Primary health goal</label>
+      <div class="option-grid" id="goal-grid">
+        <div class="option-card" data-goal="fitness">
+          <div class="opt-icon">🏃</div>
+          <div class="opt-label">Track Fitness</div>
+          <div class="opt-sub">Steps, sleep &amp; activity</div>
+        </div>
+        <div class="option-card" data-goal="chronic">
+          <div class="opt-icon">💊</div>
+          <div class="opt-label">Manage Condition</div>
+          <div class="opt-sub">Chronic illness support</div>
+        </div>
+        <div class="option-card" data-goal="clinics">
+          <div class="opt-icon">🏥</div>
+          <div class="opt-label">Find Care</div>
+          <div class="opt-sub">Clinics &amp; specialists nearby</div>
+        </div>
+        <div class="option-card" data-goal="vitals">
+          <div class="opt-icon">❤️</div>
+          <div class="opt-label">Monitor Vitals</div>
+          <div class="opt-sub">BP, glucose &amp; more</div>
+        </div>
+      </div>
+    </div>
+    <div class="error-msg" id="s2-error">Please enter your first name and select a health goal to continue.</div>
+  </div>
+  <div class="cta-area">
+    <button class="btn-secondary" onclick="goToStep(0)">← Back</button>
+    <button class="btn-primary" onclick="submitStep2()">Continue →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     STEP 3 — ClearConsent Privacy Module
+═══════════════════════════════════════════ -->
+<div class="card" id="step-3" style="display:none;">
+
+  <!-- ClearConsent module header -->
+  <div class="cc-module-header">
+    <div class="cc-module-id">
+      <div class="cc-module-icon">🔒</div>
+      <div>
+        <div class="cc-module-name">ClearConsent™</div>
+        <div class="cc-module-sub">Interactive Privacy Review · Embedded by Vitalis</div>
+      </div>
+    </div>
+    <div class="cc-powered">Privacy Made Clear</div>
+  </div>
+
+  <!-- Hero -->
+  <div class="cc-hero">
+    <div class="cc-hero-label">Privacy &amp; Data Use</div>
+    <h2>Here's exactly what<br>Vitalis collects and why.</h2>
+    <p>Before completing your Vitalis account, ClearConsent will walk you through how your health data is collected, shared, and stored.</p>
+  </div>
+
+  <!-- Chips -->
+  <div class="cc-chips">
+    <span class="chip good">✓ No data selling</span>
+    <span class="chip good2">✓ Delete anytime</span>
+    <span class="chip info">ℹ 3 third-party partners</span>
+    <span class="chip warn">⚠ Location is optional</span>
+    <span class="chip note">📅 Data kept up to 3 years</span>
+  </div>
+
+  <!-- Tabs -->
+  <div class="cc-tabs">
+    <button class="tab-btn active" onclick="switchTab('data', this)">What we collect</button>
+    <button class="tab-btn" onclick="switchTab('sharing', this)">Who sees it</button>
+    <button class="tab-btn" onclick="switchTab('retention', this)">How long</button>
+    <button class="tab-btn" onclick="switchTab('rights', this)">Your rights</button>
+    <button class="tab-btn" onclick="switchTab('consent', this)">Your choices</button>
+  </div>
+
+  <!-- Tab: What we collect -->
+  <div class="tab-panel active" id="tab-data">
+    <p class="section-title">Tap a category to learn more</p>
+    <div class="data-grid">
+      <div class="data-card" onclick="toggleCard(this)">
+        <div class="data-card-icon">📧</div>
+        <div class="data-card-title">Email Address</div>
+        <div class="data-card-sub">Required for login</div>
+        <div class="data-card-detail">Used to create your Vitalis account, send health summaries, and reset your password. Never shared with advertisers.</div>
+        <div class="expand-hint">Tap to expand ↓</div>
+      </div>
+      <div class="data-card" onclick="toggleCard(this)">
+        <div class="data-card-icon">📊</div>
+        <div class="data-card-title">Usage Data</div>
+        <div class="data-card-sub">How you use the app</div>
+        <div class="data-card-detail">Screens visited, features used, session duration. Helps Vitalis improve app design and fix bugs. Anonymised before analysis.</div>
+        <div class="expand-hint">Tap to expand ↓</div>
+      </div>
+      <div class="data-card" onclick="toggleCard(this)">
+        <div class="data-card-icon">📱</div>
+        <div class="data-card-title">Device Info</div>
+        <div class="data-card-sub">OS, screen, browser</div>
+        <div class="data-card-detail">Device model, operating system version, and screen resolution. Used to render Vitalis correctly on your device.</div>
+        <div class="expand-hint">Tap to expand ↓</div>
+      </div>
+      <div class="data-card" onclick="toggleCard(this)">
+        <div class="data-card-icon">📍</div>
+        <div class="data-card-title">Location</div>
+        <div class="data-card-sub">Optional · Can be disabled</div>
+        <div class="data-card-detail">Used to suggest nearby clinics and health services. You can turn this off at any time in Settings > Privacy. Never shared with third parties.</div>
+        <div class="expand-hint">Tap to expand ↓</div>
+      </div>
+      <div class="data-card" onclick="toggleCard(this)">
+        <div class="data-card-icon">🏃</div>
+        <div class="data-card-title">Health Metrics</div>
+        <div class="data-card-sub">Steps, sleep, vitals</div>
+        <div class="data-card-detail">Only collected if you connect a wearable device. Stored encrypted at rest. Not used for insurance or employment purposes.</div>
+        <div class="expand-hint">Tap to expand ↓</div>
+      </div>
+      <div class="data-card" onclick="toggleCard(this)">
+        <div class="data-card-icon">🍪</div>
+        <div class="data-card-title">Cookies</div>
+        <div class="data-card-sub">Session &amp; preferences</div>
+        <div class="data-card-detail">Essential cookies for login sessions and preference cookies to remember your settings. No third-party advertising cookies.</div>
+        <div class="expand-hint">Tap to expand ↓</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab: Who sees it -->
+  <div class="tab-panel" id="tab-sharing">
+    <p class="section-title">Data flow — from you to Vitalis's partners</p>
+    <div class="flow">
+      <div class="flow-node">
+        <div class="flow-icon">🙋</div>
+        <div class="flow-label">You</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="flow-icon" style="background:#f4fbf6;border-color:#2d6a4f">🫀</div>
+        <div class="flow-label">Vitalis</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node flow-third">
+        <div class="flow-icon">☁️</div>
+        <div class="flow-label">AWS Hosting</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node flow-third">
+        <div class="flow-icon">📈</div>
+        <div class="flow-label">Analytics</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node flow-third">
+        <div class="flow-icon">📬</div>
+        <div class="flow-label">Email Service</div>
+      </div>
+    </div>
+    <hr class="divider">
+    <p class="section-title">Why each partner needs access</p>
+    <div class="scenarios">
+      <div class="scenario info">
+        <strong>☁️ AWS (Amazon Web Services)</strong>
+        Stores your Vitalis data securely in encrypted servers. AWS cannot read your data, they only provide infrastructure. Covered by a strict data processing agreement.
+      </div>
+      <div class="scenario info">
+        <strong>📈 Mixpanel (Analytics)</strong>
+        Receives anonymised usage events (e.g. "user viewed dashboard"). Your name and health data are never shared. You can opt out in Your Choices.
+      </div>
+      <div class="scenario info">
+        <strong>📬 SendGrid (Email)</strong>
+        Delivers your Vitalis health digest and account notifications. Only your email address is passed. They cannot access your health records.
+      </div>
+      <div class="scenario good">
+        <strong>✓ What Vitalis never does</strong>
+        We do not sell your data, share it with insurers or employers, or use it for targeted advertising on other platforms.
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab: How long -->
+  <div class="tab-panel" id="tab-retention">
+    <p class="section-title">How long Vitalis stores each data type</p>
+    <div class="retention-list" id="retention-bars"></div>
+    <hr class="divider">
+    <div class="scenario warn" style="font-size:13px;line-height:1.6;border-radius:var(--radius);padding:14px;background:var(--cc-warn-light);border-left:4px solid var(--cc-warn);">
+      <strong>⚠ What happens when you delete your Vitalis account?</strong>
+      All personal data is permanently erased within 30 days. Anonymised, aggregated statistics may be retained for health research but cannot be traced back to you.
+    </div>
+    <p class="small-note">Retention periods comply with Canadian privacy law (PIPEDA). Request earlier deletion at privacy@vitalis.health.</p>
+  </div>
+
+  <!-- Tab: Your rights -->
+  <div class="tab-panel" id="tab-rights">
+    <p class="section-title">Under PIPEDA, you have the right to...</p>
+    <div class="rights-list" id="rights-accordion"></div>
+    <p class="small-note" style="margin-top:16px;">To exercise any right, email privacy@vitalis.health. Vitalis responds within 30 days. No fee for most requests.</p>
+  </div>
+
+  <!-- Tab: Your choices -->
+  <div class="tab-panel" id="tab-consent">
+    <p class="section-title">Customise your consent</p>
+    <div class="toggles">
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="t-name">Essential data collection</div>
+          <div class="t-desc">Email, device info, session cookies. Required for Vitalis to function.</div>
+          <div class="t-required">Required · Cannot be disabled</div>
+        </div>
+        <label class="switch"><input type="checkbox" checked disabled><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="t-name">Usage analytics</div>
+          <div class="t-desc">Anonymised data shared with Mixpanel to improve Vitalis performance and features.</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="toggle-analytics" checked><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="t-name">Location data</div>
+          <div class="t-desc">Used to show nearby clinics and health providers. Only active while Vitalis is open.</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="toggle-location"><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="t-name">Health digest emails</div>
+          <div class="t-desc">Weekly summary of your Vitalis health metrics sent to your email.</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="toggle-emails" checked><span class="slider"></span></label>
+      </div>
+    </div>
+    <hr class="divider">
+    <p class="section-title">Summary of your selections</p>
+    <div class="summary-box">
+      <div class="summary-rows" id="summary-rows"></div>
+    </div>
+    <p class="small-note">Change preferences anytime in Vitalis > Settings > Privacy. ClearConsent records a timestamped copy of your consent.</p>
+  </div>
+
+  <!-- CTA -->
+  <div class="cc-cta">
+    <button class="cc-btn-secondary" id="back-btn" onclick="prevTab()">← Back</button>
+    <button class="cc-btn-primary" id="cta-btn" onclick="nextOrAccept()">Next: Who sees it →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     STEP 4 — Welcome to Vitalis
+═══════════════════════════════════════════ -->
+<div class="card" id="step-4" style="display:none;">
+  <div class="welcome-body">
+    <div class="welcome-icon">🫀</div>
+    <h2 id="welcome-heading">Welcome to Vitalis!</h2>
+    <p>Your account is active and your health profile is ready. Here's what's waiting for you in your dashboard.</p>
+    <div class="welcome-features">
+      <div class="welcome-feat">
+        <div class="feat-icon">📊</div>
+        <div class="feat-label">Health Dashboard</div>
+        <div class="feat-sub">All your metrics and trends in one view</div>
+      </div>
+      <div class="welcome-feat">
+        <div class="feat-icon">🩺</div>
+        <div class="feat-label">Clinic Finder</div>
+        <div class="feat-sub">Nearby specialists and walk-in clinics</div>
+      </div>
+      <div class="welcome-feat">
+        <div class="feat-icon">🔔</div>
+        <div class="feat-label">Smart Reminders</div>
+        <div class="feat-sub">Medications, check-ups and appointments</div>
+      </div>
+    </div>
+    <div class="consent-attr">
+      <div class="cc-dot"></div>
+      <span id="consent-stamp">Privacy consent recorded via ClearConsent™</span>
+    </div>
+  </div>
+  <div class="cta-area">
+    <button class="btn-primary" onclick="alert('Vitalis Dashboard — coming soon!')">Go to My Dashboard →</button>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────
+// Outer step management
+// ─────────────────────────────────────────
+let outerStep = 0;
+const STEP_NAMES = ['Account', 'Profile', 'Privacy Review', 'Welcome'];
+const STEP_PCTS  = [25, 50, 75, 100];
+
+function goToStep(n) {
+  [1, 2, 3, 4].forEach(i => {
+    const el = document.getElementById('step-' + i);
+    el.style.display = 'none';
+    el.style.animation = 'none';
+  });
+  outerStep = n;
+  const card = document.getElementById('step-' + (n + 1));
+  card.style.display = 'block';
+  void card.offsetWidth; // force reflow for animation restart
+  card.style.animation = '';
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  if (n !== 2) {
+    document.getElementById('progress-fill').style.width = STEP_PCTS[n] + '%';
+    document.getElementById('step-badge').textContent = 'Step ' + (n + 1) + ' of 4 · ' + STEP_NAMES[n];
+  } else {
+    resetPrivacyTabs();
+  }
+}
+
+// ─────────────────────────────────────────
+// Step 1: Account validation
+// ─────────────────────────────────────────
+function submitStep1() {
+  const email    = document.getElementById('s1-email').value.trim();
+  const password = document.getElementById('s1-password').value;
+  const terms    = document.getElementById('s1-terms').checked;
+  const err      = document.getElementById('s1-error');
+
+  const hasMinLength    = password.length >= 8;
+  const hasNumberOrSymbol = /[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(password);
+  const validEmail      = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  if (!validEmail) {
+    err.textContent = 'Please enter a valid email address.';
+    err.style.display = 'block'; return;
+  }
+  if (!hasMinLength || !hasNumberOrSymbol) {
+    err.textContent = 'Password must be at least 8 characters and include a number or symbol.';
+    err.style.display = 'block'; return;
+  }
+  if (!terms) {
+    err.textContent = 'Please accept the Terms of Service to continue.';
+    err.style.display = 'block'; return;
+  }
+
+  err.style.display = 'none';
+  goToStep(1);
+}
+
+// ─────────────────────────────────────────
+// Step 2: Profile validation
+// ─────────────────────────────────────────
+let selectedGoal = null;
+
+document.querySelectorAll('.option-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    selectedGoal = card.dataset.goal;
+    document.getElementById('goal-grid').classList.remove('field-error');
+  });
+});
+
+function submitStep2() {
+  const fname     = document.getElementById('s2-fname').value.trim();
+  const lname     = document.getElementById('s2-lname').value.trim();
+  const dob       = document.getElementById('s2-dob').value;
+  const err       = document.getElementById('s2-error');
+  const fnameEl   = document.getElementById('s2-fname');
+  const lnameEl   = document.getElementById('s2-lname');
+  const dobEl     = document.getElementById('s2-dob');
+  const goalGrid  = document.getElementById('goal-grid');
+
+  // Clear previous highlights
+  [fnameEl, lnameEl, dobEl].forEach(el => el.classList.remove('field-error'));
+  goalGrid.classList.remove('field-error');
+
+  const missing = [];
+  if (!fname)        { missing.push('first name');      fnameEl.classList.add('field-error'); }
+  if (!lname)        { missing.push('last name');       lnameEl.classList.add('field-error'); }
+  if (!dob)          { missing.push('date of birth');   dobEl.classList.add('field-error'); }
+  if (!selectedGoal) { missing.push('a health goal');   goalGrid.classList.add('field-error'); }
+
+  if (missing.length > 0) {
+    const last  = missing.pop();
+    const list  = missing.length > 0 ? missing.join(', ') + ' and ' + last : last;
+    err.textContent = 'Please provide your ' + list + ' to continue.';
+    err.style.display = 'block';
+    return;
+  }
+
+  err.style.display = 'none';
+  goToStep(2);
+}
+
+// Clear field highlights as the user fixes them
+['s2-fname','s2-lname','s2-dob'].forEach(id => {
+  document.getElementById(id).addEventListener('input', function () {
+    this.classList.remove('field-error');
+  });
+});
+
+// ─────────────────────────────────────────
+// ClearConsent privacy tab logic
+// ─────────────────────────────────────────
+const TABS       = ['data', 'sharing', 'retention', 'rights', 'consent'];
+const TAB_LABELS = ['What we collect', 'Who sees it', 'How long', 'Your rights', 'Your choices'];
+const CTA_NEXT   = ['Next: Who sees it →', 'Next: How long →', 'Next: Your rights →', 'Next: Your choices →', 'Accept & Continue'];
+let currentTab = 0;
+
+function resetPrivacyTabs() {
+  currentTab = 0;
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-data').classList.add('active');
+  document.querySelectorAll('.tab-btn')[0].classList.add('active');
+  document.getElementById('cta-btn').textContent = CTA_NEXT[0];
+  document.getElementById('back-btn').classList.remove('hidden');
+  updatePrivacyProgress();
+}
+
+function updatePrivacyProgress() {
+  // Progress fills the 50%–75% slice across the 5 privacy tabs
+  const pct = 50 + ((currentTab + 1) / TABS.length) * 25;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  // Badge stays consistent with the outer step numbering
+  document.getElementById('step-badge').textContent = 'Step 3 of 4 · Privacy';
+}
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  currentTab = TABS.indexOf(id);
+  document.getElementById('cta-btn').textContent = CTA_NEXT[currentTab];
+  document.getElementById('back-btn').classList.remove('hidden');
+  updatePrivacyProgress();
+  if (id === 'retention') buildRetention();
+  if (id === 'rights')    buildRights();
+  if (id === 'consent')   updateSummary();
+}
+
+function nextOrAccept() {
+  if (currentTab < TABS.length - 1) {
+    currentTab++;
+    switchTab(TABS[currentTab], document.querySelectorAll('.tab-btn')[currentTab]);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    // Personalise welcome screen
+    const fname = document.getElementById('s2-fname').value.trim();
+    document.getElementById('welcome-heading').textContent =
+      fname ? 'Welcome, ' + fname + '!' : 'Welcome to Vitalis!';
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    document.getElementById('consent-stamp').textContent =
+      'Privacy consent recorded via ClearConsent™ · ' + dateStr;
+    goToStep(3);
+  }
+}
+
+function prevTab() {
+  if (currentTab > 0) {
+    currentTab--;
+    switchTab(TABS[currentTab], document.querySelectorAll('.tab-btn')[currentTab]);
+  } else {
+    goToStep(1); // Back to Profile step
+  }
+}
+
+// ─────────────────────────────────────────
+// Data card expand/collapse
+// ─────────────────────────────────────────
+function toggleCard(card) {
+  card.classList.toggle('expanded');
+  card.querySelector('.expand-hint').textContent =
+    card.classList.contains('expanded') ? 'Tap to collapse ↑' : 'Tap to expand ↓';
+}
+
+// ─────────────────────────────────────────
+// Retention bars
+// ─────────────────────────────────────────
+const retentionData = [
+  { label: 'Account data (email, profile)', duration: '3 years',     pct: 100, color: '#457b9d' },
+  { label: 'Health metrics',               duration: '3 years',     pct: 100, color: '#2d6a4f' },
+  { label: 'Usage analytics (anonymised)', duration: '2 years',     pct: 67,  color: '#f4a261' },
+  { label: 'Location history',             duration: '90 days',     pct: 8,   color: '#e76f51' },
+  { label: 'Session cookies',              duration: 'Session only', pct: 2,   color: '#a8dadc' },
+];
+
+function buildRetention() {
+  const el = document.getElementById('retention-bars');
+  el.innerHTML = retentionData.map(r => `
+    <div class="ret-item">
+      <div class="ret-head">
+        <span class="ret-name">${r.label}</span>
+        <span class="ret-val">${r.duration}</span>
+      </div>
+      <div class="ret-bar-bg">
+        <div class="ret-bar-fill" data-pct="${r.pct}" style="width:0%;background:${r.color}"></div>
+      </div>
+    </div>`).join('');
+  setTimeout(() => document.querySelectorAll('.ret-bar-fill').forEach(b => b.style.width = b.dataset.pct + '%'), 50);
+}
+
+// ─────────────────────────────────────────
+// Rights accordion
+// ─────────────────────────────────────────
+const rightsData = [
+  { icon: '👁',  title: 'Access your data',    body: 'Request a full copy of all data Vitalis holds about you. Provided in machine-readable format (JSON) within 30 days.' },
+  { icon: '✏️', title: 'Correct inaccuracies', body: 'If any data is incorrect or outdated, request an update. Vitalis will confirm the correction in writing.' },
+  { icon: '🗑',  title: 'Delete your account', body: 'Request complete deletion of your account and health data. Processing takes up to 30 days. Anonymised aggregate data may be retained.' },
+  { icon: '📦',  title: 'Data portability',    body: 'Export your health data in standard formats (CSV, JSON) at any time from Vitalis > Settings > Export.' },
+  { icon: '🚫',  title: 'Withdraw consent',    body: 'Withdraw consent for optional data uses (analytics, location) at any time in Settings > Privacy without affecting your account.' },
+  { icon: '⚖️', title: 'Lodge a complaint',   body: 'If you believe Vitalis mishandled your data, contact the Office of the Privacy Commissioner of Canada (OPC) at https://www.priv.gc.ca.' },
+];
+
+function buildRights() {
+  document.getElementById('rights-accordion').innerHTML = rightsData.map((r, i) => `
+    <div class="right-item">
+      <button class="right-head" onclick="toggleRight(this, ${i})">
+        <span>${r.icon} ${r.title}</span>
+        <span class="chevron">▼</span>
+      </button>
+      <div class="right-body" id="right-body-${i}">
+        <div class="right-body-inner">${r.body}</div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleRight(btn, i) {
+  btn.classList.toggle('open');
+  document.getElementById('right-body-' + i).classList.toggle('open');
+}
+
+// ─────────────────────────────────────────
+// Consent summary
+// ─────────────────────────────────────────
+function updateSummary() {
+  const a = document.getElementById('toggle-analytics').checked;
+  const l = document.getElementById('toggle-location').checked;
+  const e = document.getElementById('toggle-emails').checked;
+  document.getElementById('summary-rows').innerHTML = `
+    <div class="sum-row"><span class="sum-label">Essential data</span><span class="sum-val yes">✓ Enabled (required)</span></div>
+    <div class="sum-row"><span class="sum-label">Usage analytics</span><span class="sum-val ${a?'yes':'no'}">${a?'✓ Enabled':'✗ Disabled'}</span></div>
+    <div class="sum-row"><span class="sum-label">Location data</span><span class="sum-val ${l?'yes':'no'}">${l?'✓ Enabled':'✗ Disabled'}</span></div>
+    <div class="sum-row"><span class="sum-label">Health digest emails</span><span class="sum-val ${e?'yes':'no'}">${e?'✓ Enabled':'✗ Disabled'}</span></div>`;
+}
+['toggle-analytics','toggle-location','toggle-emails'].forEach(id =>
+  document.getElementById(id).addEventListener('change', updateSummary)
+);
+
+// ─────────────────────────────────────────
+// Password toggle
+// ─────────────────────────────────────────
+function togglePassword(inputId, btn) {
+  const input = document.getElementById(inputId);
+  input.type = input.type === 'password' ? 'text' : 'password';
+  btn.textContent = input.type === 'password' ? 'Show' : 'Hide';
+}
+
+// Real-time password hint feedback
+document.getElementById('s1-password').addEventListener('input', function () {
+  const hint = document.getElementById('pw-hint');
+  const val  = this.value;
+  const hasLength = val.length >= 8;
+  const hasNumSym = /[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(val);
+
+  if (val.length === 0) {
+    hint.textContent = 'At least 8 characters, including a number or symbol.';
+    hint.style.color = '';
+  } else if (!hasLength) {
+    hint.textContent = 'Must be at least 8 characters.';
+    hint.style.color = 'var(--warn)';
+  } else if (!hasNumSym) {
+    hint.textContent = 'Needs at least one number or symbol.';
+    hint.style.color = 'var(--warn)';
+  } else {
+    hint.textContent = '✓ Password looks good.';
+    hint.style.color = 'var(--success)';
+  }
+});
+// ─────────────────────────────────────────
+// Modal open / close
+// ─────────────────────────────────────────
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+// Close on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function (e) {
+    if (e.target === this) closeModal(this.id);
+  });
+});
+</script>
+
+<!-- ── Terms of Service Modal ── -->
+<div class="modal-overlay" id="modal-tos">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Vitalis — Terms of Service</h3>
+      <button class="modal-close" onclick="closeModal('modal-tos')">✕</button>
+    </div>
+    <div class="modal-body">
+      <h4>1. Acceptance of Terms</h4>
+      <p>By creating a Vitalis account, you agree to these Terms of Service and our Privacy Policy. If you do not agree, please do not use the service.</p>
+      <h4>2. Use of the Service</h4>
+      <p>Vitalis is a personal health management platform. You may use it solely for lawful, personal, non-commercial purposes. You are responsible for maintaining the confidentiality of your account credentials.</p>
+      <h4>3. Health Information Disclaimer</h4>
+      <p>Vitalis does not provide medical advice. Content on the platform is for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider.</p>
+      <h4>4. Data & Privacy</h4>
+      <p>Your personal and health data is handled in accordance with our Privacy Policy and applicable Canadian law (PIPEDA). You retain ownership of your health data at all times. We will never sell your data to third parties.</p>
+      <h4>5. Account Termination</h4>
+      <p>You may delete your account at any time from Settings > Account. Upon deletion, all personal data will be permanently erased within 30 days in accordance with our data retention policy.</p>
+      <h4>6. Changes to Terms</h4>
+      <p>Vitalis may update these terms from time to time. You will be notified of material changes by email. Continued use of the service after changes constitutes acceptance of the updated terms.</p>
+      <h4>7. Contact</h4>
+      <p>For questions about these terms, contact us at privacy@vitalis.health.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" onclick="closeModal('modal-tos')" style="max-width:160px;padding:11px 20px;font-size:13px;">Got it</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── ClearConsent Info Modal ── -->
+<div class="modal-overlay" id="modal-cc">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>🔒 What is ClearConsent™?</h3>
+      <button class="modal-close" onclick="closeModal('modal-cc')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>ClearConsent™ is an independent, interactive privacy consent platform embedded by Vitalis during the sign-up process.</p>
+      <h4>Why does Vitalis use it?</h4>
+      <p>Traditional privacy policies are long, dense, and difficult to understand. ClearConsent replaces the standard "wall of text" with a structured, step-by-step review that explains, in plain language, exactly what data is collected, who can see it, how long it is kept, and what your rights are.</p>
+      <h4>What does ClearConsent do?</h4>
+      <p>It walks you through five sections: what Vitalis collects, who the data is shared with, how long it is retained, your legal rights under PIPEDA, and your ability to customise your consent preferences.</p>
+      <h4>Is my data shared with ClearConsent?</h4>
+      <p>ClearConsent only records a timestamped log of your consent choices, it does not receive or store your personal health data. Your health information stays with Vitalis.</p>
+      <h4>Can I change my preferences later?</h4>
+      <p>Yes. You can review and update your consent choices at any time from Vitalis > Settings > Privacy.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" onclick="closeModal('modal-cc')" style="max-width:160px;padding:11px 20px;font-size:13px;">Got it</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
